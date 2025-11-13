@@ -1,0 +1,41 @@
+services:
+  hadoop-master:
+    image: yassern1/hadoop-spark-jupyter:1.0.3
+    container_name: hadoop2-master
+    hostname: hadoop2-master
+    ports:
+      - "9880:9870"
+      - "8098:8088"
+      - "7087:7077"
+      - "19988:19888"
+      - "8081:8080"
+      - "9001:9000"
+    volumes:
+      - C:\Users\A.OUAFDI\Documents\hadoop_compose2\hadoop_project2:/shared_volume2
+    command: tail -f /dev/null
+    networks:
+      - hadoop2-net
+
+  hadoop-slave1:
+    image: yassern1/hadoop-spark-jupyter:1.0.3
+    container_name: hadoop2-slave1
+    hostname: hadoop2-slave1
+    ports:
+      - "8050:8042"
+    command: tail -f /dev/null
+    networks:
+      - hadoop2-net
+
+  hadoop-slave2:
+    image: yassern1/hadoop-spark-jupyter:1.0.3
+    container_name: hadoop2-slave2
+    hostname: hadoop2-slave2
+    ports:
+      - "8051:8042"
+    command: tail -f /dev/null
+    networks:
+      - hadoop2-net
+
+networks:
+  hadoop2-net:
+    driver: bridge
