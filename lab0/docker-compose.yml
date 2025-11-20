@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  hadoop-master:
+    image: yassern1/hadoop-spark-jupyter:1.0.3
+    container_name: hadoop-master
+    hostname: hadoop-master
+    ports:
+      - "9870:9870"    # NameNode UI
+      - "8088:8088"    # ResourceManager UI
+      - "19888:19888"  # HistoryServer
+      - "8042:8042"    # NodeManager
+    volumes:
+      - ./hadoop-data/master:/hadoop/data
+      - ./shared-data:/shared-data
+      - ./scripts:/scripts
+    environment:
+      - HADOOP_ROLE=master
+    command: >
+      sh -c "
+        service ssh start &&
+        echo 'hadoop-slave1' > /usr/local/hadoop/etc/hadoop/workers &&
+        echo 'hadoop-slave2' >> /usr/local/hadoop/etc/hadoop/workers &&
+        /scripts/init-and-start-hadoop.sh &&
+        tail -f /dev/null
+      "
+    networks:
+      hadoop-network:
+        aliases:
+          - hadoop-master
+          - namenode
+          - resourcemanager
+
+  hadoop-slave1:
+    image: yassern1/hadoop-spark-jupyter:1.0.3
+    container_name: hadoop-slave1
+    hostname: hadoop-slave1
+    volumes:
+      - ./hadoop-data/slave1:/hadoop/data
+      - ./shared-data:/shared-data
+    environment:
+      - HADOOP_ROLE=slave
+      - SLAVE_NUMBER=1
+    command: >
+      sh -c "
+        service ssh start &&
+        tail -f /dev/null
+      "
+    networks:
+      hadoop-network:
+        aliases:
+          - hadoop-slave1
+          - datanode1
+
+  hadoop-slave2:
+    image: yassern1/hadoop-spark-jupyter:1.0.3
+    container_name: hadoop-slave2
+    hostname: hadoop-slave2
+    volumes:
+      - ./hadoop-data/slave2:/hadoop/data
+      - ./shared-data:/shared-data
+    environment:
+      - HADOOP_ROLE=slave
+      - SLAVE_NUMBER=2
+    command: >
+      sh -c "
+        service ssh start &&
+        tail -f /dev/null
+      "
+    networks:
+      hadoop-network:
+        aliases:
+          - hadoop-slave2
+          - datanode2
+
+networks:
+  hadoop-network:
+    driver: bridge
+    name: hadoop-cluster-network
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
