@@ -1,0 +1,3 @@
+Bonjour Kafka
+Bienvenue dans le monde du streaming
+Ceci est un test magique
