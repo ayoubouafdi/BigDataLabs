@@ -1,2 +1,7 @@
 lab5_Spark/target/ 
 *.jar 
+*.docx
+*.zip
+*.pdf
+*.txt
+captures/
